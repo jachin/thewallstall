@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>Stall Wall - Link List</title>
+	</head>
+	
+	<body>
+		<h1>Link List</h1>
+		
+		<ul>
+			{% for link in links %}
+			<li>
+				{{link.url}}
+				- {{link.category}}
+				- <a href="/links/{{link.key}}/delete/">delete</a>
+			</li>
+			{% endfor %}
+		</ul>
+		
+		<p>
+			<a href="/link/add/">Add a Link</a>
+		</p>
+		
+	</body>
+	
+</html>
