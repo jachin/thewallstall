@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
+from google.appengine.dist import use_library
+use_library('django', '1.2')
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
+from google.appengine.ext.db import djangoforms
 
 import cgi
 import os
@@ -11,10 +15,29 @@ import string
 import logging
 import random
 
+from django import forms
+
 
 class Link(db.Model):
-	url = db.LinkProperty()
-	category = db.CategoryProperty()
+	url = db.LinkProperty(required=True)
+	category = db.CategoryProperty(required=True)
+	
+	
+class LinkForm(djangoforms.ModelForm):
+	
+	error_css_class = 'error'
+	required_css_class = 'required'
+	
+	url = forms.CharField(
+		max_length=100, 
+		required=True,
+		label="URL",
+		help_text="The URL.",
+		widget = forms.TextInput
+	)
+	
+	class Meta:
+		model = Link
 
 
 class MainHandler(webapp.RequestHandler):
@@ -52,20 +75,33 @@ class AddLinkHandler(webapp.RequestHandler):
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'templates/add_link.html')
 		template_values = {
-			
+			'form': LinkForm(),
 		}
 		self.response.out.write(template.render(path, template_values))
 	
 	def post(self):
-		url = self.request.get('url')
-		category = self.request.get('category')
 		
-		link = Link()
-		link.url = db.Link(url)
-		link.category = db.Category(category)
-		link.put()
+		# url = self.request.get('url')
+		# category = self.request.get('category')
+		# 
+		# link = Link()
+		# link.url = db.Link(url)
+		# link.category = db.Category(category)
+		# link.put()
 		
-		self.redirect('/links/')
+		form = LinkForm(data=self.request.POST)
+		
+		if form.is_valid():
+			form.save()
+			self.redirect('/links/')
+		else:
+			path = os.path.join(os.path.dirname(__file__), 'templates/add_link.html')
+			template_values = {
+				'form': LinkForm(),
+			}
+			self.response.out.write(template.render(path, template_values))
+		
+		
 
 
 class DeleteLinkHandler(webapp.RequestHandler):
