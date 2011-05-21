@@ -28,12 +28,22 @@ class LinkForm(djangoforms.ModelForm):
 	error_css_class = 'error'
 	required_css_class = 'required'
 	
-	url = forms.CharField(
-		max_length=100, 
+	url = forms.URLField(
+		max_length=200,
 		required=True,
 		label="URL",
 		help_text="The URL.",
-		widget = forms.TextInput
+		widget = forms.TextInput(attrs={'size':'50'})
+	)
+	
+	category = forms.CharField(
+		required=True,
+		label="Category",
+		widget=forms.Select(choices=(
+		    ('news', 'News'),
+		    ('picture', 'Picture'),
+		    ('story', 'Story'),
+		))
 	)
 	
 	class Meta:
@@ -44,36 +54,47 @@ class MainHandler(webapp.RequestHandler):
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'templates/main.html')
 		
-		query = Link.all(keys_only=False)
+		query = Link.all(keys_only=True)
 		
 		if query.count() < 1:
 			self.redirect('/no-links/')
-		
-		random_index = random.randint(0, query.count()-1 );
-		
-		link = query.fetch( 1, random_index )[0]
-		
-		template_values = {
-			'link': link,
-		}
-		self.response.out.write(template.render(path, template_values))
+		else:
+			random_index = random.randint(0, query.count()-1 );
+			
+			link_key = query.fetch( 1, random_index )[0]
+			link = Link.get(link_key)
+			
+			template_values = {
+				'link': link,
+			}
+			self.response.out.write(template.render(path, template_values))
 
-class LinkHandler(webapp.RequestHandler):
+
+class CategoryHandler(webapp.RequestHandler):
 	def get(self, category):
 		
-		logging.info(category)
+		query = Link.all(keys_only=True)
+		query.filter("category =", category)
 		
-		path = os.path.join(os.path.dirname(__file__), 'templates/link.html')
-		template_values = {
-			'url': 'http://clockwork.net',
-		}
-		self.response.out.write(template.render(path, template_values))
+		if query.count() < 1:
+			self.redirect('/no-links/')
+		else:
+			random_index = random.randint(0, query.count()-1 );
+			
+			link_key = query.fetch( 1, random_index )[0]
+			link = Link.get(link_key)
+			
+			path = os.path.join(os.path.dirname(__file__), 'templates/main.html')
+			template_values = {
+				'link': link,
+			}
+			self.response.out.write(template.render(path, template_values))
 
 
 class AddLinkHandler(webapp.RequestHandler):
 	
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'templates/add_link.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/link_add.html')
 		template_values = {
 			'form': LinkForm(),
 		}
@@ -81,33 +102,25 @@ class AddLinkHandler(webapp.RequestHandler):
 	
 	def post(self):
 		
-		# url = self.request.get('url')
-		# category = self.request.get('category')
-		# 
-		# link = Link()
-		# link.url = db.Link(url)
-		# link.category = db.Category(category)
-		# link.put()
-		
 		form = LinkForm(data=self.request.POST)
 		
 		if form.is_valid():
 			form.save()
 			self.redirect('/links/')
 		else:
-			path = os.path.join(os.path.dirname(__file__), 'templates/add_link.html')
 			template_values = {
-				'form': LinkForm(),
+				'form': form,
 			}
+			path = os.path.join(os.path.dirname(__file__), 'templates/link_add.html')
 			self.response.out.write(template.render(path, template_values))
 		
 		
 
 
 class DeleteLinkHandler(webapp.RequestHandler):
-
+	
 	def get(self, link_key):
-		path = os.path.join(os.path.dirname(__file__), 'templates/delete_link.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/link_delete.html')
 		
 		link = Link.get(link_key)
 		
@@ -120,20 +133,18 @@ class DeleteLinkHandler(webapp.RequestHandler):
 		
 		logging.info(self.request.get('submit'))
 		
-		if self.request.get('submit') is not 'Delete':
-			self.redirect('/links/')
-		
-		link_key = self.request.get('link_key')
-		link = Link.get(link_key)
-		link.delete()
-		
+		if self.request.get('submit') == 'Delete':
+			link_key = self.request.get('link_key')
+			link = Link.get(link_key)
+			link.delete()
+			
 		self.redirect('/links/')
 
 
 class ListLinksHandler(webapp.RequestHandler):
 	
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'templates/list_links.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/link_list.html')
 		
 		links = Link.all()
 		
@@ -151,8 +162,8 @@ def main():
 			('/link/add/', AddLinkHandler),
 			('/links/', ListLinksHandler),
 			('/links/([a-zA-Z0-9]*)/delete/', DeleteLinkHandler),
-			('/category/([a-z]*)', LinkHandler),
-			('/category/([a-z]*)/', LinkHandler),
+			('/category/([a-z]*)', CategoryHandler),
+			('/category/([a-z]*)/', CategoryHandler),
 		],
 		debug=True
 	)
