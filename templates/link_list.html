@@ -4,6 +4,8 @@
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Stall Wall - Link List</title>
+		
+		<link type="text/css" rel="stylesheet" href="/stylesheets/admin.css" />
 	</head>
 	
 	<body>
@@ -14,16 +16,14 @@
 			<li>
 				{{link.url}}
 				- <strong>{{link.category}}</strong>
-				- <a href="/admin/links/{{link.key}}/delete/">delete</a>
+				- <a class="command" href="/admin/links/{{link.key}}/edit/">edit</a>
+				- <a class="command" href="/admin/links/{{link.key}}/delete/">delete</a>
 			</li>
 			{% endfor %}
 		</ul>
 		
-		<p>
+		<p class="navigation">
 			<a href="/admin/link/add/">Add a Link</a>
-		</p>
-		
-		<p>
 			<a href="{{logout_url}}">Logout</a>
 		</p>
 		

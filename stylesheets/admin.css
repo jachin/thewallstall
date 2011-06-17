@@ -1,0 +1,75 @@
+body {
+	font-family: sans-serif;
+}
+
+.errors {
+	color: red;
+}
+
+label {
+	font-weight: bold;
+}
+
+.help {
+	font-size: 70%;
+	font-style: italic;
+}
+
+a.command {
+	font-size: 80%;
+	border-color: black;
+	border-width: 1px;
+	border-style: solid;
+	padding: 3px;
+	background-color: LightBlue;
+}
+
+a.command:link {
+	color: black;
+	text-decoration: none;
+}
+
+q.command:visited {
+	color: black;
+}
+
+a.command:active {
+	color: black;
+}
+
+a.command:hover {
+	color: black;
+	background-color: yellow;
+}
+
+.navigation {
+	font-size: 80%;
+	font-weight: bold;
+}
+
+.navigation a {
+	border-color: black;
+	border-width: 1px;
+	border-style: solid;
+	padding: 3px;
+	background-color: silver;
+}
+
+.navigation a:link {
+	color: black;
+}
+
+.navigation a:visited {
+	color: black;
+}
+
+
+.navigation a:active {
+	color: black;
+}
+
+.navigation a:hover {
+	color: black;
+	background-color: yellow;
+}
+

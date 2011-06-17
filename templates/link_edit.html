@@ -3,20 +3,21 @@
 
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-		<title>Stall Wall - Add Link</title>
+		<title>Stall Wall - Edit Link</title>
 		
 		<link type="text/css" rel="stylesheet" href="/stylesheets/admin.css" />
-		
 	</head>
 	
 	<body>
-		<h1>Add Link</h1>
+		<h1>Edit Link</h1>
+		
+		<p>{{link.url}}</p>
 		
 		<form action="." method="post" accept-charset="utf-8">
 			
 			{{ form.url.label_tag }}
 			{{ form.url }}
-
+			
 			{% if form.url.errors %}
 			<p class="errors">
 				{{ form.url.errors|join:" " }}
@@ -25,11 +26,10 @@
 			<p class="help">
 				{{ form.url.help_text }}
 			</p>
-
-
+			
 			{{ form.category.label_tag }}
 			{{ form.category }}
-
+			
 			{% if form.category.errors %}
 			<p class="errors">
 				{{ form.category.errors|join:" " }}
@@ -38,16 +38,16 @@
 			<p class="help">
 				{{ form.category.help_text }}
 			</p>
-
-			<p>
-				<input type="submit" value="Add Link">
-			</p>
 			
+			<p>
+				<input type="submit" value="Update Link">
+			</p>
 			
 		</form>
 		
 		<p class="navigation">
 			<a href="/admin/links/">Links</a>
+			<a href="{{logout_url}}">Logout</a>
 		</p>
 		
 	</body>

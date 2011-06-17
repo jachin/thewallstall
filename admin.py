@@ -3,6 +3,12 @@
 from google.appengine.dist import use_library
 use_library('django', '1.2')
 
+import cgi
+import os
+import string
+import logging
+import random
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
@@ -11,12 +17,6 @@ from google.appengine.ext.db import djangoforms
 from google.appengine.api.users import create_logout_url
 
 from django import forms
-
-import cgi
-import os
-import string
-import logging
-import random
 
 from models.models import Link
 
@@ -86,6 +86,37 @@ class AddLinkHandler(webapp.RequestHandler):
 			self.response.out.write(template.render(path, template_values))
 
 
+class EditLinkHandler(webapp.RequestHandler):
+	
+	def get(self, link_key):
+		
+		link = Link.get(link_key)
+		
+		path = os.path.join(os.path.dirname(__file__), 'templates/link_edit.html')
+		template_values = {
+			'link': link,
+			'form': LinkForm( instance=link ),
+		}
+		self.response.out.write(template.render(path, template_values))
+	
+	def post(self, link_key):
+		
+		link = Link.get(link_key)
+		
+		form = LinkForm(data=self.request.POST, instance=link)
+		
+		if form.is_valid():
+			form.save()
+			self.redirect('/admin/links/')
+		else:
+			path = os.path.join(os.path.dirname(__file__), 'templates/link_edit.html')
+			template_values = {
+				'link': link,
+				'form': form,
+			}
+			self.response.out.write(template.render(path, template_values))
+
+
 class DeleteLinkHandler(webapp.RequestHandler):
 	
 	def get(self, link_key):
@@ -97,14 +128,14 @@ class DeleteLinkHandler(webapp.RequestHandler):
 			'link': link,
 		}
 		self.response.out.write(template.render(path, template_values))
-	
+		
 	def post(self, link_key):
 		
 		if self.request.get('submit') == 'Delete':
 			link_key = self.request.get('link_key')
 			link = Link.get(link_key)
 			link.delete()
-		
+			
 		self.redirect('/admin/links/')
 
 
@@ -112,10 +143,11 @@ def main():
 	application = webapp.WSGIApplication(
 		[
 			('/admin/', ListLinksHandler),
+			('/admin/links/', ListLinksHandler),
 			('/admin/links/add/', AddLinkHandler),
 			('/admin/link/add/', AddLinkHandler),
-			('/admin/links/', ListLinksHandler),
 			('/admin/links/([a-zA-Z0-9]*)/delete/', DeleteLinkHandler),
+			('/admin/links/([a-zA-Z0-9]*)/edit/', EditLinkHandler),
 		],
 		debug=True
 	)
