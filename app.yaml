@@ -11,5 +11,8 @@ handlers:
   script: admin.py
   login: admin
 
+- url: /admin
+  script: redirector.py
+
 - url: .*
   script: main.py

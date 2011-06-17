@@ -40,11 +40,21 @@ class CategoryHandler(webapp.RequestHandler):
 			self.response.out.write(template.render(path, template_values))
 
 
+class LoggedOutHandler(webapp.RequestHandler):
+
+	def get(self):
+		path = os.path.join(os.path.dirname(__file__), 'templates/loggedout.html')
+		template_values = { }
+		self.response.out.write(template.render(path, template_values))
+
+
+
 def main():
 	application = webapp.WSGIApplication(
 		[
 			('/', mainh.MainHandler),
 			('/no-links/', mainh.NoLinksHandler),
+			('/logout/', LoggedOutHandler),
 			# ('/links/add/', AddLinkHandler),
 			# ('/link/add/', AddLinkHandler),
 			# ('/links/', ListLinksHandler),

@@ -8,6 +8,7 @@ from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 from google.appengine.ext.db import djangoforms
+from google.appengine.api.users import create_logout_url
 
 from django import forms
 
@@ -55,6 +56,7 @@ class ListLinksHandler(webapp.RequestHandler):
 		links = Link.all()
 		
 		template_values = {
+			'logout_url': create_logout_url('/admin/logout/'),
 			'links': links,
 		}
 		self.response.out.write(template.render(path, template_values))
