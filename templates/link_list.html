@@ -13,7 +13,7 @@
 			{% for link in links %}
 			<li>
 				{{link.url}}
-				- {{link.category}}
+				- <strong>{{link.category}}</strong>
 				- <a href="/links/{{link.key}}/delete/">delete</a>
 			</li>
 			{% endfor %}

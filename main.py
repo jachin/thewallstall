@@ -154,6 +154,13 @@ class ListLinksHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, template_values))
 
 
+class NoLinksHandler(webapp.RequestHandler):
+	def get(self):
+		path = os.path.join(os.path.dirname(__file__), 'templates/no_links.html')
+		template_values = { }
+		self.response.out.write(template.render(path, template_values))
+
+
 def main():
 	application = webapp.WSGIApplication(
 		[
@@ -161,6 +168,7 @@ def main():
 			('/links/add/', AddLinkHandler),
 			('/link/add/', AddLinkHandler),
 			('/links/', ListLinksHandler),
+			('/no-links/', NoLinksHandler),
 			('/links/([a-zA-Z0-9]*)/delete/', DeleteLinkHandler),
 			('/category/([a-z]*)', CategoryHandler),
 			('/category/([a-z]*)/', CategoryHandler),
